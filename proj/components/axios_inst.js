@@ -1,10 +1,9 @@
 import axios from 'axios';
 import { AsyncStorage, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-// console.log(useNavigation())
-// const baseURL = 'http://192.168.43.123:8000/api/';
+import { navigate } from './RootNavigation'
+const baseURL = 'http://192.168.43.123:8000/api/';
 
-export const baseURL = 'http://192.168.0.108:8000/api/';
+// export const baseURL = 'http://192.168.0.108:8000/api/';
 
 export const axiosInstance = axios.create({
 	baseURL: baseURL,
@@ -39,6 +38,8 @@ axiosInstance.interceptors.response.use(
 			originalRequest.url === baseURL + 'token/refresh/'
 		) {
 			// window.location.href = '/login/';
+			navigate('Login',{warning:"error status 401"})
+
 			return Promise.reject(error);
 		}
 
@@ -82,11 +83,13 @@ axiosInstance.interceptors.response.use(
 						});
 				} else {
 					console.log('Refresh token is expired', tokenParts.exp, now);
-					// window.location.href = '/login/';  //try to solve this with redux
+					// window.location.href = '/login/'; 
+                    navigate('Login',{warning:"refresh token has expired"})
 				}
 			} else {
 				Alert.alert('Refresh token not available.');
 				// window.location.href = '/login/';
+				navigate('Login',{warning:"refresh token not available"})
 			}
 		}
 

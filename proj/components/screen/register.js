@@ -1,16 +1,16 @@
 import React,{ useState } from 'react'
-import {
-    Block, Button, Input, NavBar, Text,
-  } from 'galio-framework';
+import { Dimensions, KeyboardAvoidingView,AsyncStorage} from 'react-native';
 
-  import {
-    Alert, Dimensions, KeyboardAvoidingView, StyleSheet, AsyncStorage
-  } from 'react-native';
-
-import   { baseURL } from '../axios_inst';
+//third party library imports
+import { Block, Button, Input, NavBar, Text,} from 'galio-framework';
 import axios from 'axios';
+
+//custom imports
+import   { baseURL } from '../axios_inst';
 import {ValidateEmail,ValidatePassword,checkifempty} from '../utils';
 import theme from '../theme';
+import {styles} from './Auth_styles'
+
 const { width } = Dimensions.get('window');
 
 const RegisterPage=({ navigation })=>{
@@ -18,6 +18,7 @@ const RegisterPage=({ navigation })=>{
     const [username,setUsername]=useState("");
     const [password,setPassword]=useState("");
     const [password2,setPassword2]=useState("");
+    const [isLoading,setIsLoading]=useState(false)
 
     const [fieldemptyerror,setFieldEmptyError]=useState(false);
     const [passworderror,setPasswordError]=useState(false);
@@ -57,6 +58,7 @@ const RegisterPage=({ navigation })=>{
           setPasswordError(false);
           if(password===password2){ //check if the password is equal
             setPasswordNotMatch(false);
+            setIsLoading(true);
             axios.post(baseURL+"account/register",{
                   'email':String(email),
                   'username':String(username),
@@ -66,8 +68,10 @@ const RegisterPage=({ navigation })=>{
             .then(res=>{
               let returned_res=res.data;
               console.log(returned_res);
+              setIsLoading(false);
               setEmailExists(false);
               setUsernameExists(false);
+              //write code to navigate to login page once registered
              if(returned_res.email!==undefined){
                     setEmailExists(true);
              }
@@ -119,6 +123,7 @@ const RegisterPage=({ navigation })=>{
               <Input
                 rounded
                 onChangeText={text => handleChange('email', text)} 
+                value={email}
                 type="email-address"
                 placeHolder="theme"
                 autoCapitalize="none"
@@ -130,6 +135,7 @@ const RegisterPage=({ navigation })=>{
               <Text >UserName:</Text>
               <Input
                 onChangeText={text => handleChange('username', text)} 
+                value={username}
                 rounded              
                 type="email-address"
                 placeHolder="theme"
@@ -144,6 +150,7 @@ const RegisterPage=({ navigation })=>{
               <Input
                 rounded
                 onChangeText={text => handleChange('password', text)} 
+                value={password}
                 password
                 viewPass
                 placeHolder="Password"
@@ -156,7 +163,8 @@ const RegisterPage=({ navigation })=>{
                 <Text>Confirm password:</Text>
               <Input
                 rounded
-                onChangeText={text => handleChange('password2', text)} 
+                onChangeText={text => handleChange('password2', text)}
+                value={password2} 
                 password
                 viewPass
                 placeHolder="Password"
@@ -170,6 +178,7 @@ const RegisterPage=({ navigation })=>{
             <Block flex middle>
               <Button
                 round
+                loading={isLoading}
                 size="large"
                 color="success" 
                 onPress={handleSubmit}
@@ -188,25 +197,7 @@ const RegisterPage=({ navigation })=>{
     )
 }
 
-const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      alignItems: 'center',
-      justifyContent: 'space-around',
-      paddingTop: theme.SIZES.BASE * 0.3,
-      paddingHorizontal: theme.SIZES.BASE,
-      backgroundColor: theme.COLORS.WHITE,
-    },
-    social: {
-      width: theme.SIZES.BASE * 3.5,
-      height: theme.SIZES.BASE * 3.5,
-      borderRadius: theme.SIZES.BASE * 1.75,
-      justifyContent: 'center',
-    },
-    errorColor:{
-      color:"red"
-    }
-  });
+
   
   
 export default RegisterPage

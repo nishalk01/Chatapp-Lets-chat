@@ -1,16 +1,18 @@
+import React ,{useEffect} from 'react';
+import { StyleSheet, Text, View,AsyncStorage } from 'react-native';
+//react-navigation imports
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer} from '@react-navigation/native'
-import React from 'react';
-
-import { StyleSheet, Text, View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+//icon import 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-
+//custom function imports
+import {navigationRef,navigate } from './components/RootNavigation';
 
 import Login from './components/screen/login'
 import UserList from './components/screen/userlist'
 import RegisterPage from './components/screen/register'
-import Example from './components/screen/Chatroom'
+import Example from './components/screen/Chatroom_message'
 
 import Thing from './components/screen/thing';
 
@@ -23,8 +25,7 @@ const Tab = createBottomTabNavigator();
 
 const MainApp=()=>{
   return (
-    <Tab.Navigator
-    >
+    <Tab.Navigator>
       <Tab.Screen 
               options={{
                 tabBarLabel: 'Chat',
@@ -36,25 +37,33 @@ const MainApp=()=>{
                   activeBackgroundColor:"black"
                 }
               }}
-      name="UserList"  component={UserList} />
+      name="UserList"  
+      component={UserList} />
       <Tab.Screen 
+
       options={{
         tabBarLabel: 'Profile',
         tabBarIcon: ({ color }) => (
           <MaterialCommunityIcons name="facebook" color={color} size={26} />
         ),
       }}
-      name="Thing" component={Thing}/>
+      name="Thing" 
+      component={Thing}/>
     </Tab.Navigator>
   );
 } 
 
 
 export default function App() {
+  useEffect(()=>{
+    if(AsyncStorage.getItem('access_token')){
+    navigate('MainApp', { screen: 'UserList' });
+    console.log("pass")
+    }
+  },[])
   return (
     
-    <NavigationContainer>
-      
+    <NavigationContainer ref={navigationRef}>
       <Stack.Navigator headerMode={"float"} >
       <Stack.Screen  name="Login" component={Login} />
       <Stack.Screen name="RegisterPage" component={RegisterPage} />

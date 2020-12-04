@@ -1,4 +1,4 @@
-import React,{ useState } from 'react';
+import React,{ useState,useRef,createRef } from 'react';
 import {
   Alert, Dimensions, KeyboardAvoidingView, StyleSheet, AsyncStorage
 } from 'react-native';
@@ -9,15 +9,16 @@ import {
 } from 'galio-framework';
 import { ValidateEmail,ValidatePassword } from '../utils';
 import theme from '../theme';
-
+import {styles} from './Auth_styles'
 const { height, width } = Dimensions.get('window');
 
-const Login =({ navigation })=>{
 
+const Login =({ navigation })=>{
   const [email,setEmail]=useState("");
   const [password,setPassword]=useState("");
   const [passwordError,setPasswordError]=useState(false);
   const [emailError,setEmailError ] =useState(false);
+  const [isLoading,setIsLoading]=useState(false);
 
 
   const handleChange=(name,text)=>{
@@ -44,6 +45,7 @@ const Login =({ navigation })=>{
     }
     if(val_password && val_email){
       //do axios call
+      setIsLoading(true);
       axiosInstance.post("token/",{
         "email":email,
         "password":password
@@ -51,9 +53,12 @@ const Login =({ navigation })=>{
       .then(res=>{
         AsyncStorage.setItem('access_token',res.data.access);
         AsyncStorage.setItem('refresh_token',res.data.refresh);
-        Alert.alert(res.data.access)
         axiosInstance.defaults.headers['Authorization'] =
             'JWT ' + AsyncStorage.getItem('access_token');
+        setEmail("")
+        setPassword("")
+        setIsLoading(false);
+        // navigation.navigate('MainApp', { screen: 'UserList' });
 
       })
       .catch(err=>{
@@ -95,7 +100,8 @@ const Login =({ navigation })=>{
                 placeHolder="theme"
                 autoCapitalize="none"
                 style={{ width: width * 0.9 }}
-                onChangeText={text => handleChange('email', text)}
+                onChangeText={text =>handleChange('email', text)}
+                value={email}
                 help={emailError?(<Text style={{color:"red"}}>email entered is not in proper format</Text>):(<Text> </Text>)}
                 bottomHelp
               />
@@ -107,6 +113,7 @@ const Login =({ navigation })=>{
                 placeHolder="Password"
                 style={{ width: width * 0.9}}
                 onChangeText={text => handleChange('password', text)}
+                value={password}
                 help={passwordError?(<Text style={{color:"red"}}>password has to be so and so</Text>):(<Text> </Text>)}
                 bottomHelp
               />
@@ -117,7 +124,6 @@ const Login =({ navigation })=>{
                   // console.log(As)
                   AsyncStorage.clear();
                   console.log("cleared local stoarge")
-                  navigation.navigate('MainApp', { screen: 'UserList' });
                 }
                    }
                 style={{ alignSelf: 'flex-end', lineHeight: theme.SIZES.FONT * 2 }}
@@ -130,7 +136,7 @@ const Login =({ navigation })=>{
                 round
                 uppercase
                 size="large"
-                // loading={true}
+                loading={isLoading}
                 color="success" 
                 onPress={handleSubmit}
               >
@@ -147,24 +153,5 @@ const Login =({ navigation })=>{
       </Block>
   )
 }
-
-
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    paddingTop: theme.SIZES.BASE * 0.3,
-    paddingHorizontal: theme.SIZES.BASE,
-    backgroundColor: theme.COLORS.WHITE,
-  },
-  social: {
-    width: theme.SIZES.BASE * 3.5,
-    height: theme.SIZES.BASE * 3.5,
-    borderRadius: theme.SIZES.BASE * 1.75,
-    justifyContent: 'center',
-  },
-});
 
 export default Login;

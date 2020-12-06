@@ -1,11 +1,15 @@
 import  React,{ useRef } from 'react';
 import { Appbar } from 'react-native-paper';
+
 import Menu,{ MenuItem } from 'react-native-material-menu';
+import { AsyncStorage } from 'react-native';
 
 const AppBar = () => {
   // const _goBack = () => console.log('Went back');
   const MenuRef= useRef("null");
-  const _handleSearch = () => console.log('Searching');
+  const _handleSearch = () => {console.log('Searching')
+  AsyncStorage.clear()
+};
 
   const _handleMore = () => console.log('Shown more');
 

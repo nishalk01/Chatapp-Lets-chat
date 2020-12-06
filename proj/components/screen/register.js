@@ -9,7 +9,7 @@ import axios from 'axios';
 import   { baseURL } from '../axios_inst';
 import {ValidateEmail,ValidatePassword,checkifempty} from '../utils';
 import theme from '../theme';
-import {styles} from './Auth_styles'
+import {styles} from '../Auth_styles'
 
 const { width } = Dimensions.get('window');
 

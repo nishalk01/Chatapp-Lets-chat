@@ -2,16 +2,17 @@ import React,{ useState,useRef,createRef } from 'react';
 import {
   Alert, Dimensions, KeyboardAvoidingView, StyleSheet, AsyncStorage
 } from 'react-native';
-import { axiosInstance } from '../axios_inst';
+import { axiosInstance,setRefreshToken,setAcessToken,access_token } from '../axios_inst';
 // galio component
 import {
   Block, Button, Input, NavBar, Text,
 } from 'galio-framework';
 import { ValidateEmail,ValidatePassword } from '../utils';
 import theme from '../theme';
-import {styles} from './Auth_styles'
+import {styles} from '../Auth_styles'
+import { navigate } from '../RootNavigation';
 const { height, width } = Dimensions.get('window');
-
+console.log(axiosInstance)
 
 const Login =({ navigation })=>{
   const [email,setEmail]=useState("");
@@ -50,15 +51,18 @@ const Login =({ navigation })=>{
         "email":email,
         "password":password
       })
-      .then(res=>{
-        AsyncStorage.setItem('access_token',res.data.access);
-        AsyncStorage.setItem('refresh_token',res.data.refresh);
+      .then( async (res)=>{
+        // AsyncStorage.setItem('access_token',res.data.access);
+        // AsyncStorage.setItem('refresh_token',res.data.refresh);
+        await setAcessToken(res);
+        await setRefreshToken(res);
+        await  access_token();
         axiosInstance.defaults.headers['Authorization'] =
-            'JWT ' + AsyncStorage.getItem('access_token');
+            'JWT ' + await access_token()
         setEmail("")
         setPassword("")
         setIsLoading(false);
-        // navigation.navigate('MainApp', { screen: 'UserList' });
+        navigation.navigate('MainApp', { screen: 'UserList' });
 
       })
       .catch(err=>{
@@ -124,6 +128,7 @@ const Login =({ navigation })=>{
                   // console.log(As)
                   AsyncStorage.clear();
                   console.log("cleared local stoarge")
+                  navigation.navigate('MainApp', { screen: 'UserList' })
                 }
                    }
                 style={{ alignSelf: 'flex-end', lineHeight: theme.SIZES.FONT * 2 }}

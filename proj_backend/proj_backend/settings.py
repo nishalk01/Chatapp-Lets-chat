@@ -47,6 +47,9 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
+    'channels',
+    'chat',
+    'user_list',
     'accounts'
 ]
 
@@ -66,7 +69,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['template'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -80,6 +83,21 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'proj_backend.wsgi.application'
+ASGI_APPLICATION = 'proj_backend.asgi.application'
+
+
+redis_ip="192.168.0.108"
+# redis_ip="192.168.43.123"
+ 
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [(redis_ip, 6379)],
+        },
+    },
+}
 
 AUTH_USER_MODEL = 'accounts.Account'
 # Database
@@ -150,7 +168,7 @@ MEDIA_ROOT=os.path.join(BASE_DIR,"media")
 
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=1),#change this
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=4),#change this
     'REFRESH_TOKEN_LIFETIME': timedelta(days=10),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': False,

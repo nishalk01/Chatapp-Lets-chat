@@ -4,7 +4,7 @@ import AppBar from '../component/AppBar'
 import Example from '../component/Chatroom_message'
 
 const ChatRoom=({ route,navigation})=>{
-   console.log(route)
+   
    return(
 <View style={{ flex: 1 }}>
    <AppBar/>

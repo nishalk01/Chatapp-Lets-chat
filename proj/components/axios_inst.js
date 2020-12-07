@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { AsyncStorage, Alert } from 'react-native';
+import {decode as atob, encode as btoa} from 'base-64'
 import { navigate } from './RootNavigation'
-import { cos } from 'react-native-reanimated';
+
 
 // export const baseURL = 'http://192.168.43.123:8000/api/';
 
@@ -11,7 +12,6 @@ export const baseURL = 'http://192.168.0.108:8000/api/';
 
 export const access_token= ()=>{
 AsyncStorage.getItem("access_token").then(access_token=>{
-	console.log("passed get thing")
 	acess_=access_token
 })
  return  acess_ 
@@ -28,17 +28,12 @@ export const setAcessToken=async (response)=>{
 	return await  AsyncStorage.setItem('refresh_token', response.data.refresh);
 }
 
-
-
-
-console.log("henlo")
-console.log(acess_)
 export const axiosInstance= axios.create({
 	baseURL: baseURL,
 	timeout: 5000,
 	headers: {
-		Authorization:  access_token() ?
-			'JWT ' +  access_token() :
+		Authorization:  AsyncStorage.getItem("access_token") ?
+			'JWT ' +  AsyncStorage.getItem("access_token") :
 			null,
 		'Content-Type': 'application/json',
 		accept: 'application/json',
@@ -64,10 +59,9 @@ axiosInstance.interceptors.response.use(
 	(response) => {
 		return response;
 	},
-	 function (error) {
-		
+	async function (error) {
 		const originalRequest = error.config;
-		console.log(error.response)
+		// console.log(error.response)
 		if (typeof error.response === 'undefined') {
 			Alert.alert(
 				'A server/network error occurred. ' +
@@ -83,20 +77,18 @@ axiosInstance.interceptors.response.use(
 		) {
 			// window.location.href = '/login/';
 			navigate('Login',{warning:"error status 401"})
-            console.log("error 401 thing")
 			return Promise.reject(error);
 		}
 
 		if (
-			error.response.data.code === 'token_not_valid' &&
-			error.response.status === 401 &&
-			error.response.statusText === 'Unauthorized'
+			// error.response.data.code === "token_not_valid" &&
+			error.response.status === 401 
+			// error.response.statusText === 'Unauthorized'
 		) {  
-
-	  AsyncStorage.getItem('refresh_token').then(refresh_token=>{
-				console.log(refreshToken)
+				const  refreshToken= await AsyncStorage.getItem('refresh_token')
+				 
 			
-				console.log("401 unauth")
+				console.log("getting refresh token")
 				if (refreshToken) {
 					
 					const tokenParts = JSON.parse(atob(refreshToken.split('.')[1]));
@@ -116,7 +108,6 @@ axiosInstance.interceptors.response.use(
 								 AsyncStorage.setItem('refresh_token', response.data.refresh);
 								//  setAcessToken(response);
 								//  setRefreshToken(response);
-								console.log(AsyncStorage.getItem("acess_token"))
 								  axiosInstance.defaults.headers['Authorization'] =
 									'JWT ' + response.data.access;
 								  originalRequest.headers['Authorization'] =
@@ -141,7 +132,7 @@ axiosInstance.interceptors.response.use(
 				}
 
 
-			});
+			
 
 			
 		}

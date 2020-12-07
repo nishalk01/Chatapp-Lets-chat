@@ -11,8 +11,6 @@ const AppBar = () => {
   AsyncStorage.clear()
 };
 
-  const _handleMore = () => console.log('Shown more');
-
   const hideMenu=()=>{
     
     MenuRef.current.hide();
@@ -33,11 +31,6 @@ const AppBar = () => {
           <MenuItem onPress={hideMenu}>New Group</MenuItem>
           <MenuItem onPress={hideMenu}>New Broadcast</MenuItem>
           <MenuItem onPress={hideMenu}>Settings</MenuItem>
-          {/* <MenuItem onPress={hideMenu} disabled>
-            Menu item 3
-          </MenuItem>
-          <MenuDivider />
-          <MenuItem onPress={hideMenu}>Menu item 4</MenuItem> */}
         </Menu>
     </Appbar.Header>
   );

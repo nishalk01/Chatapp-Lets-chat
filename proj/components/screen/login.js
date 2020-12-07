@@ -1,17 +1,16 @@
-import React,{ useState,useRef,createRef } from 'react';
+import React,{ useState } from 'react';
 import {
-  Alert, Dimensions, KeyboardAvoidingView, StyleSheet, AsyncStorage
+  Alert, Dimensions, KeyboardAvoidingView,AsyncStorage
 } from 'react-native';
-import { axiosInstance,setRefreshToken,setAcessToken,access_token } from '../axios_inst';
+import { axiosInstance,setRefreshToken,setAcessToken } from '../axios_inst';
 // galio component
 import {
-  Block, Button, Input, NavBar, Text,
+  Block, Button, Input, Text,
 } from 'galio-framework';
 import { ValidateEmail,ValidatePassword } from '../utils';
 import theme from '../theme';
 import {styles} from '../Auth_styles'
-import { navigate } from '../RootNavigation';
-const { height, width } = Dimensions.get('window');
+const {  width } = Dimensions.get('window');
 console.log(axiosInstance)
 
 const Login =({ navigation })=>{
@@ -56,9 +55,9 @@ const Login =({ navigation })=>{
         // AsyncStorage.setItem('refresh_token',res.data.refresh);
         await setAcessToken(res);
         await setRefreshToken(res);
-        await  access_token();
+        
         axiosInstance.defaults.headers['Authorization'] =
-            'JWT ' + await access_token()
+            'JWT ' + res.data.access
         setEmail("")
         setPassword("")
         setIsLoading(false);

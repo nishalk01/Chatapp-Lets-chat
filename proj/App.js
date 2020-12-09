@@ -1,8 +1,13 @@
 import React ,{useEffect} from 'react';
 import { StyleSheet, Text, View,AsyncStorage } from 'react-native';
+import { Provider as PaperProvider ,
+         DarkTheme as PaperDarkTheme,
+         DefaultTheme as PaperDefaultTheme} from 'react-native-paper';
 //react-navigation imports
 import { createStackNavigator } from '@react-navigation/stack';
-import { NavigationContainer} from '@react-navigation/native'
+import { NavigationContainer,
+       DarkTheme as NavigationDarkTheme,
+       DefaultTheme as NavigationDefaultTheme} from '@react-navigation/native'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
 //icon import 
@@ -10,6 +15,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 //custom function imports
 import {navigationRef,navigate } from './components/RootNavigation';
+import WebsocketContextProvider from  './components/contexts/websocketcontext';
 //screens
 import Login from './components/screen/login'
 import UserList from './components/screen/userlist'
@@ -18,6 +24,24 @@ import ChatRoom from './components/screen/Chatroom'
 import AppBar from './components/component/AppBar'
 import Thing from './components/component/thing';
 
+
+const CombinedDefaultTheme = {
+  ...PaperDefaultTheme,
+  ...NavigationDefaultTheme,
+  colors: {
+    ...PaperDefaultTheme.colors,
+    ...NavigationDefaultTheme.colors,
+  },
+};
+const CombinedDarkTheme = {
+  ...PaperDarkTheme,
+  ...NavigationDarkTheme,
+  colors: {
+    ...PaperDarkTheme.colors,
+    ...NavigationDarkTheme.colors,
+  },
+};
+ 
 
 
 
@@ -67,14 +91,21 @@ export default function App() {
   },[])
   return (
     
-    <NavigationContainer ref={navigationRef}>
-      <Stack.Navigator headerMode={"float"} >
+    <WebsocketContextProvider>
+    <PaperProvider  theme={CombinedDefaultTheme}>
+    <NavigationContainer ref={navigationRef} >
+     
+      <Stack.Navigator headerMode={"float"} > 
+      
       <Stack.Screen  name="Login" component={Login} />
       <Stack.Screen name="RegisterPage" component={RegisterPage} />
       <Stack.Screen name="ChatRoom"   options={{headerShown: false}}  component={ChatRoom}/>
       <Stack.Screen name="MainApp" options={{headerShown: false}}  component={MainApp}/>
+      
     </Stack.Navigator>
     </NavigationContainer>
+    </PaperProvider>
+    </WebsocketContextProvider>
   );
 }
 

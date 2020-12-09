@@ -14,18 +14,20 @@ const UserList=({ navigation })=>{
      axiosInstance.get("userlist/get_room_id/")
      .then(res=>{
        console.log(res.data.roomid);//setup a websocket connection here
+       
+       axiosInstance.get("userlist/all_users/")
+       .then(res=>{
+         setUserListData(res.data);
+       })
+       .catch(err=>{
+         console.log(err)
+       })
 
      })
      .catch(err=>{
        console.log(err);
      })
-    axiosInstance.get("userlist/all_users/")
-    .then(res=>{
-      setUserListData(res.data);
-    })
-    .catch(err=>{
-      console.log(err)
-    })
+   
    })
  
   },[])

@@ -3,7 +3,7 @@ import image from '../screen/default.png'
 import {Avatar,Title,List,Divider,Caption,TouchableRipple,TextInput,Provider,Dialog,Button, Paragraph,Portal,Modal} from 'react-native-paper'
 import {View,StyleSheet,Text } from 'react-native'
 
-const Thing=()=>{
+const ProfilePage=({ navigation })=>{
   const [visibleName, setVisibleName] = useState(false);
   const [visibleAbout,setVisibleAbout]=useState(false);
   const [visibleEmail,setVisibleEmail]=useState(false);
@@ -103,7 +103,7 @@ const Thing=()=>{
   </TouchableRipple>
   <Divider/>
   <TouchableRipple
-      onPress={() => console.log('Pressed')}
+      onPress={() => {navigation.navigate("ShowQR")}}
       rippleColor="rgba(0, 0, 0, .32)"
      >
      <List.Item 
@@ -130,4 +130,4 @@ const styles=StyleSheet.create({
     marginBottom:30,
   }
 })
-export default Thing;
+export default ProfilePage;

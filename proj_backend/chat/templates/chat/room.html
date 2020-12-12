@@ -22,7 +22,7 @@
 
         chatSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);
-            document.querySelector('#chat-log').value += (data.message + '\n');
+            document.querySelector('#chat-log').value += (data.message.text + '\n');
         };
 
         chatSocket.onclose = function(e) {
@@ -39,8 +39,25 @@
         document.querySelector('#chat-message-submit').onclick = function(e) {
             const messageInputDom = document.querySelector('#chat-message-input');
             const message = messageInputDom.value;
+//             {
+//   "_id": "32038f3b-9317-4d0d-8d01-b8fe012522ba",
+//   "createdAt": 2020-12-11T08:12:04.015Z,
+//   "text": "Sending message to check if it works",
+//   "user": Object {
+//     "_id": 2,
+//   }}
+
+       const message_after_obj= {
+            "_id":Math.random(),
+            "createdAt":new Date(),
+            "text":message,
+            "user":{
+                "_id":1,
+            }
+        }   
+            console.log(message_after_obj)
             chatSocket.send(JSON.stringify({
-                'message': message
+                'message': message_after_obj
             }));
             messageInputDom.value = '';
         };

@@ -6,15 +6,12 @@ import { ActivityIndicator, Colors,TouchableRipple } from 'react-native-paper';
 
 
 
+
 const UserList=({ navigation })=>{
   const [ userListsData,setUserListData ]=useState([]);
   const [roomId,setRoomId]=useState("");
   useEffect(()=>{
    AsyncStorage.getItem("acess_token").then(()=>{
-     axiosInstance.get("userlist/get_room_id/")
-     .then(res=>{
-       console.log(res.data.roomid);//setup a websocket connection here
-       
        axiosInstance.get("userlist/all_users/")
        .then(res=>{
          setUserListData(res.data);
@@ -22,12 +19,6 @@ const UserList=({ navigation })=>{
        .catch(err=>{
          console.log(err)
        })
-
-     })
-     .catch(err=>{
-       console.log(err);
-     })
-   
    })
  
   },[])

@@ -6,18 +6,28 @@ import { AsyncStorage } from 'react-native';
 
 import {navigate} from '../RootNavigation';
 import { WebsocketContext } from '../contexts/websocketcontext';
-var inoke=""
+
 const AppBar = () => {
-  const { websocketConnection,message  }=useContext(WebsocketContext);
+  const { websocketConnection,message,inoke}=useContext(WebsocketContext);
   useEffect(()=>{
-     inoke=websocketConnection();
-   
+   websocketConnection();
+   console.log(inoke)
+   console.log("wat i passed inoke")
   },[])
-  // const _goBack = () => console.log('Went back');
+  
+  const _goBack = () => {console.log('Went back')
+  if(inoke){
+    inoke.close();//try and catch here
+  }
+
+
+
+ 
+};
   const MenuRef= useRef("null");
   const _handleSearch = () => {
     console.log(message)
-    inoke.close();
+    
   // AsyncStorage.clear()
 };
 
@@ -32,7 +42,7 @@ const AppBar = () => {
   
   return (
     <Appbar.Header dark={false}>
-      {/* <Appbar.BackAction onPress={_goBack} /> */}
+      <Appbar.BackAction onPress={_goBack} />
       <Appbar.Content  title="Let's Chat"  />
       <Appbar.Action icon="magnify" onPress={_handleSearch} />
       <Menu

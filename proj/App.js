@@ -22,8 +22,8 @@ import UserList from './components/screen/userlist'
 import RegisterPage from './components/screen/register'
 import ChatRoom from './components/screen/Chatroom'
 import AppBar from './components/component/AppBar'
-import Thing from './components/component/thing';
-
+import ProfilePage from './components/component/thing';
+import QrPage from './components/screen/QRPage';
 
 const CombinedDefaultTheme = {
   ...PaperDefaultTheme,
@@ -73,8 +73,8 @@ const MainApp=()=>{
         tabBarLabel: 'Profile',
       
       }}
-      name="Thing" 
-      component={Thing}/>
+      name="ProfilePage" 
+      component={ProfilePage}/>
     </Tab.Navigator>
     </View>
     
@@ -101,6 +101,7 @@ export default function App() {
       <Stack.Screen name="RegisterPage" component={RegisterPage} />
       <Stack.Screen name="ChatRoom"   options={{headerShown: false}}  component={ChatRoom}/>
       <Stack.Screen name="MainApp" options={{headerShown: false}}  component={MainApp}/>
+      <Stack.Screen name="ShowQR"  options={{ headerShown:false}} component={QrPage} />
       
     </Stack.Navigator>
     </NavigationContainer>

@@ -52,6 +52,7 @@ const AppBar = () => {
           <MenuItem onPress={hideMenu}>New Group</MenuItem>
           <MenuItem onPress={hideMenu}>New Broadcast</MenuItem>
           <MenuItem onPress={hideMenu}>Settings</MenuItem>
+          <MenuItem onPress={hideMenu}>Scan QRCode</MenuItem>
         </Menu>
     </Appbar.Header>
   );

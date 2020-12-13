@@ -22,7 +22,7 @@ import UserList from './components/screen/userlist'
 import RegisterPage from './components/screen/register'
 import ChatRoom from './components/screen/Chatroom'
 import AppBar from './components/component/AppBar'
-import ProfilePage from './components/component/thing';
+import ProfilePage from './components/component/ProfilePage';
 import QrPage from './components/screen/QRPage';
 
 const CombinedDefaultTheme = {

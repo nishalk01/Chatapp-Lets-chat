@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework import status
 import jwt
+from PIL import Image
 from accounts.models import Account
 from django.conf import settings
 from .serializers import UserListSerializers
@@ -34,6 +35,24 @@ def get_current_user_details(request):#extend this to get all necessary user dat
     return Response(response_room_id)
    else:
        return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+@permission_classes([AllowAny])
+@api_view(['POST',])
+def update_profile(request):
+    if request.method=="POST":
+        print(request.data)
+        if 'file' not in request.data:
+            print("Empty content")
+        f=request.data['file']
+        try:
+            img=Image.open(f)
+            img.verify()
+            return Response(status=status.HTTP_200_OK)
+        except:
+            return Response(status=status.HTTP_200_OK)
+            
+        
+    
 
    
 

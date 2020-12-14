@@ -14,6 +14,7 @@ export const access_token= ()=>{
 AsyncStorage.getItem("access_token").then(access_token=>{
 	acess_=access_token
 })
+ console.log(acess_)
  return  acess_ 
 }
 
@@ -28,11 +29,13 @@ export const setAcessToken=async (response)=>{
 	return await  AsyncStorage.setItem('refresh_token', response.data.refresh);
 }
 
+
+var acess_t= AsyncStorage.getItem("access_token")
 export const axiosInstance= axios.create({
 	baseURL: baseURL,
 	timeout: 5000,
 	headers: {
-		Authorization:  AsyncStorage.getItem("access_token") ?
+		Authorization: AsyncStorage.getItem("access_token") ?
 			'JWT ' +  AsyncStorage.getItem("access_token") :
 			null,
 		'Content-Type': 'application/json',
@@ -40,17 +43,9 @@ export const axiosInstance= axios.create({
 	},
 });
 
-// export const axiosInstance= axios.create({
-// 	baseURL: baseURL,
-// 	timeout: 5000,
-// 	headers: {
-// 		Authorization:  AsyncStorage.getItem('access_token') ?
-// 			'JWT ' +  AsyncStorage.getItem('access_token') :
-// 			null,
-// 		'Content-Type': 'application/json',
-// 		accept: 'application/json',
-// 	},
-// });
+
+
+
 
 
 
@@ -61,7 +56,7 @@ axiosInstance.interceptors.response.use(
 	},
 	async function (error) {
 		const originalRequest = error.config;
-		// console.log(error.response)
+		console.log(error.response)
 		if (typeof error.response === 'undefined') {
 			Alert.alert(
 				'A server/network error occurred. ' +

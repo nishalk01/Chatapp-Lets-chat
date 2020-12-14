@@ -1,9 +1,12 @@
-import React,{useState,useRef} from 'react';
-import image from '../screen/default.png'
+import React,{useState,useRef,useEffect} from 'react';
 import {Avatar,Title,List,Divider,Caption,TouchableRipple,TextInput,Provider,FAB,Button, Paragraph,Portal,Modal,IconButton,Colors} from 'react-native-paper'
-import {View,StyleSheet,Text } from 'react-native'
+import {View,StyleSheet,Text,Platform,Image } from 'react-native'
 import { Modalize } from 'react-native-modalize';
-
+import * as ImagePicker from 'expo-image-picker';
+//custom imports
+import axios from 'axios'
+import images from '../screen/default.png'
+import { base64ToBlob } from '../utils';
 
 const ProfilePage=({ navigation })=>{
   const [visibleName, setVisibleName] = useState(false);
@@ -22,13 +25,65 @@ const ProfilePage=({ navigation })=>{
   const hideModalEmail = () => setVisibleEmail(false);
 
   const modalizeRef = useRef(null);
+  const [image, setImage] = useState(null);
+  
+  // useEffect(() => {
+  //   (async () => {
+  //     if (Platform.OS !== 'web') {
+  //       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  //       if (status !== 'granted') {
+  //         alert('Sorry, we need camera roll permissions to make this work!');
+  //       }
+  //     }
+  //   })();
+  // }, []);
+
+
+
 
   const onOpen=()=>{
    modalizeRef.current?.open();
   };
+  
+  const pickImage = async () => {
+    modalizeRef.current?.close();
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [5, 5],
+      base64:true,
+      quality: 0.6,
+    });
 
+    console.log(result);
+
+    if (!result.cancelled) {
+      setImage(result.uri);
+      let uri = result.uri;
+      let fileExtension = uri.substr(uri.lastIndexOf('.') + 1);
+      console.log(fileExtension)
+      const type='image/'+String(fileExtension)
+      console.log(type)
+      // base64ToBlob(result.base64,res)
+      let ProfilepicForm=new FormData();
+     
+      axios.post('http://192.168.0.108:8000/api/userlist/update_profile/',{ //anonymous for now 
+        file:ProfilepicForm
+      }).then(res=>{
+        console.log(res)
+      })
+      .catch(err=>{
+        console.log(err)
+      })
+      console.log(ProfilepicForm)
+      
+
+    }
+  };
 
   const [text,setText]=useState("")
+
+  
 
     return(
       <Provider>
@@ -72,7 +127,7 @@ const ProfilePage=({ navigation })=>{
       placeholder="Search"
      
     /> */}
-      <Avatar.Image style={styles.avatar} source={image} size={150} />
+      <Avatar.Image style={styles.avatar} source={images} size={150} />
       <FAB
       loading={false}
     style={styles.fab}
@@ -92,28 +147,28 @@ const ProfilePage=({ navigation })=>{
 
       >
         <View >
-       <IconButton
-        style={styles.roundButton1}
+  <IconButton
+    style={styles.roundButton1}
     icon="folder-multiple-image"
     color={Colors.grey100}
     size={36}
-    onPress={() => console.log('Pressed')}
+    onPress={pickImage}
   />
-       <IconButton
-        style={styles.roundButton2} 
+  <IconButton
+    style={styles.roundButton2} 
     icon="trash-can"
     color={Colors.grey100}
     size={36}
     onPress={() => console.log('Pressed')}
   />
 
-       {/* <Text style={styles.roundButton2} >s</Text>      */}
 
        </View>
       </Modalize>
      
       <Divider/>
-{/* first input */}
+{/* first input  Name */}
+{image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
       <TouchableRipple
       onPress={showModalName}
       rippleColor="rgba(0, 0, 0, .32)"
@@ -127,7 +182,7 @@ const ProfilePage=({ navigation })=>{
      </TouchableRipple>
 
      <Divider/>
-{/* second input */}
+{/* second input ABout */}
      <TouchableRipple
       onPress={showModalAbout}
       rippleColor="rgba(0, 0, 0, .32)"
@@ -140,6 +195,7 @@ const ProfilePage=({ navigation })=>{
   />
   </TouchableRipple>
   <Divider/>
+  {/* third input email */}
   <TouchableRipple
       onPress={showModalEmail}
       rippleColor="rgba(0, 0, 0, .32)"
@@ -152,15 +208,16 @@ const ProfilePage=({ navigation })=>{
   />
   </TouchableRipple>
   <Divider/>
+
+{/* QR option */}
+
   <TouchableRipple
       onPress={() => {navigation.navigate("ShowQR")}}
       rippleColor="rgba(0, 0, 0, .32)"
      >
      <List.Item 
       title={<Text>QRcode</Text>}
-      // description={<Text>nonek25121999@gmail.com</Text>}
       left={props=><List.Icon  icon="qrcode"  size={30} />}
-      // right={props=><List.Icon  icon="pencil" />}
   />
   </TouchableRipple>
   <Divider/>
@@ -169,6 +226,8 @@ const ProfilePage=({ navigation })=>{
   </Provider>
     )
 }
+
+
 
 const styles=StyleSheet.create({
   container:{

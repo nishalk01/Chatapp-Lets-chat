@@ -4,9 +4,15 @@ from rest_framework.permissions import AllowAny
 from rest_framework import status
 import jwt
 from PIL import Image
+import io
+import base64
+# from PIL import Image
 from accounts.models import Account
 from django.conf import settings
-from .serializers import UserListSerializers
+from .serializers import UserListSerializers,UserDetailsSerializers
+
+
+
 
 def get_user_from_token(tokens_jwt):
  try:
@@ -26,30 +32,31 @@ def get_user_list(request):
     return Response(serializer.data)
 
 @api_view(['GET',])
-def get_current_user_details(request):#extend this to get all necessary user data including list of data
+def get_current_user_details(request):
+    #room_id,avatar,username,status,email
    tokens_jwt=request.META["HTTP_AUTHORIZATION"]
+   print(tokens_jwt)
    satisfied,user_id=get_user_from_token(tokens_jwt)
    if(satisfied):
     account_obj=Account.objects.get(id=user_id)
-    response_room_id={"roomid":account_obj.user_room_id}
-    return Response(response_room_id)
+    serializer=UserDetailsSerializers(account_obj,context={"request":request})
+    # response_room_id={"roomid":account_obj.user_room_id,"email":account_obj.email,"username":account_obj.username,}
+    return Response(serializer.data)
    else:
        return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-@permission_classes([AllowAny])
 @api_view(['POST',])
 def update_profile(request):
     if request.method=="POST":
-        print(request.data)
-        if 'file' not in request.data:
-            print("Empty content")
-        f=request.data['file']
-        try:
-            img=Image.open(f)
-            img.verify()
-            return Response(status=status.HTTP_200_OK)
-        except:
-            return Response(status=status.HTTP_200_OK)
+        tokens_jwt=request.META["HTTP_AUTHORIZATION"]
+        satisfied,user_id=get_user_from_token(tokens_jwt)
+        if(satisfied):
+          account_obj=Account.objects.get(id=user_id)
+          account_obj.avatar=request.FILES['image'] #change avatar
+          account_obj.save()
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+    return Response(status=status.HTTP_200_OK)
             
         
     

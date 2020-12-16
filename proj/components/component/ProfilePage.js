@@ -1,14 +1,16 @@
-import React,{useState,useRef,useEffect} from 'react';
+import React,{useState,useRef,useEffect,useContext} from 'react';
 import {Avatar,Title,List,Divider,Caption,TouchableRipple,TextInput,Provider,FAB,Button, Paragraph,Portal,Modal,IconButton,Colors} from 'react-native-paper'
-import {View,StyleSheet,Text,Platform,Image } from 'react-native'
+import {View,StyleSheet,Text,ToastAndroid,Image,AsyncStorage,TouchableHighlight } from 'react-native'
 import { Modalize } from 'react-native-modalize';
 import * as ImagePicker from 'expo-image-picker';
 //custom imports
-import axios from 'axios'
-import images from '../screen/default.png'
-import { base64ToBlob } from '../utils';
-
+import { WebsocketContext } from '../contexts/websocketcontext';
+import {  axiosInstance } from '../axios_inst';
+import { getDateString,CaptilizeFirstWord } from '../utils';
+ 
 const ProfilePage=({ navigation })=>{
+  const { userDetail }=useContext(WebsocketContext)
+  const { avatar,email,status,username } =userDetail;
   const [visibleName, setVisibleName] = useState(false);
   const [visibleAbout,setVisibleAbout]=useState(false);
   const [visibleEmail,setVisibleEmail]=useState(false);
@@ -40,6 +42,15 @@ const ProfilePage=({ navigation })=>{
 
 
 
+  const showToastWithGravityAndOffset = () => {
+    ToastAndroid.showWithGravityAndOffset(
+      "Changed dp sucessfully",
+      ToastAndroid.LONG,
+      ToastAndroid.BOTTOM,
+      25,
+      50
+    );
+  };
 
   const onOpen=()=>{
    modalizeRef.current?.open();
@@ -55,28 +66,32 @@ const ProfilePage=({ navigation })=>{
       quality: 0.6,
     });
 
-    console.log(result);
-
+   
     if (!result.cancelled) {
       setImage(result.uri);
       let uri = result.uri;
       let fileExtension = uri.substr(uri.lastIndexOf('.') + 1);
-      console.log(fileExtension)
       const type='image/'+String(fileExtension)
-      console.log(type)
-      // base64ToBlob(result.base64,res)
-      let ProfilepicForm=new FormData();
-     
-      axios.post('http://192.168.0.108:8000/api/userlist/update_profile/',{ //anonymous for now 
-        file:ProfilepicForm
-      }).then(res=>{
-        console.log(res)
+      const dpname=String("pf"+getDateString()+"."+fileExtension)
+      const ProfilepicForm= new FormData();
+      ProfilepicForm.append("image",{
+         uri:uri,
+         name:dpname,
+         type:type
+      })
+      
+     AsyncStorage.getItem("acess_token").then(access_token=>{
+      axiosInstance.post('userlist/update_profile/',ProfilepicForm)
+      .then(res=>{
+        console.log(res.status)
+        showToastWithGravityAndOffset()
       })
       .catch(err=>{
         console.log(err)
       })
-      console.log(ProfilepicForm)
-      
+
+     })
+   
 
     }
   };
@@ -127,7 +142,12 @@ const ProfilePage=({ navigation })=>{
       placeholder="Search"
      
     /> */}
-      <Avatar.Image style={styles.avatar} source={images} size={150} />
+     <TouchableRipple
+      onPress={()=>{console.log("touch man")}}
+      >
+      <Avatar.Image style={styles.avatar}  source={{ uri: avatar}}size={150} />
+      </TouchableRipple>  
+     
       <FAB
       loading={false}
     style={styles.fab}
@@ -175,7 +195,7 @@ const ProfilePage=({ navigation })=>{
       >
       <List.Item 
         title={<Paragraph>Name</Paragraph>}
-        description={<Text><Title>Mr.unknown02<Text>{'\n'}</Text></Title><Caption>This is your username</Caption></Text>}
+        description={<Text><Title>{CaptilizeFirstWord(username)}<Text>{'\n'}</Text></Title><Caption>This is your username</Caption></Text>}
         left={props=><List.Icon  icon="account"  size={30} />}
         right={props=><List.Icon  icon="pencil" />}
       />
@@ -189,7 +209,7 @@ const ProfilePage=({ navigation })=>{
      >
      <List.Item 
       title={<Paragraph>About</Paragraph>}
-      description={<Title>Zzz.......</Title>}
+    description={<Title>{status}</Title>}
       left={props=><List.Icon  icon="information"  size={30} />}
       right={props=><List.Icon  icon="pencil" />}
   />
@@ -202,7 +222,7 @@ const ProfilePage=({ navigation })=>{
      >
      <List.Item 
       title={<Paragraph>Email</Paragraph>}
-      description={<Text>nonek25121999@gmail.com</Text>}
+    description={<Text>{ email  }</Text>}
       left={props=><List.Icon  icon="email"  size={30} />}
       right={props=><List.Icon  icon="pencil" />}
   />

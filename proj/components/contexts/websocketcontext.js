@@ -6,20 +6,20 @@ import { axiosInstance,socketurl } from '../axios_inst'
 export const WebsocketContext=createContext();
 const WebsocketContextProvider=(props)=>{
     const [message,setMessage]=useState([]);
-    const [roomId,setRoomId ]=useState("");
+    const [userDetail,setUserDetail ]=useState();
     var  [inoke,setInoke]=useState();
 
     const websocketConnection=()=>{
-    AsyncStorage.getItem("acess_token").then(access_token=>{
-       axiosInstance.get("userlist/get_room_id/")
+    AsyncStorage.getItem("acess_token").then(acess_token=>{
+        console.log(acess_token)
+       axiosInstance.get("userlist/get_user_details/")
         .then(res=>{
-            console.log(res.data)
-            setRoomId(res.data.roomid)
+            setUserDetail(res.data)
              const chatSocket=new WebSocket(
                 'ws://'
                 + socketurl
                 + '/ws/chat/'
-                + res.data.roomid
+                + res.data.user_room_id
                 + '/'
            );
            chatSocket.onopen=(e)=>{
@@ -53,7 +53,7 @@ const WebsocketContextProvider=(props)=>{
 
     
     return(
-        <WebsocketContext.Provider value={{ message,websocketConnection,inoke }}>
+        <WebsocketContext.Provider value={{ message,websocketConnection,inoke,userDetail }}>
             {props.children}
         </WebsocketContext.Provider>
     )

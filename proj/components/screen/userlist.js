@@ -1,10 +1,11 @@
 import React ,{ useEffect,useState }from 'react';
 import { Avatar,Card,Divider,Badge } from 'react-native-paper'
-import { View,ScrollView,TouchableOpacity,AsyncStorage } from 'react-native';
-import   { axiosInstance } from '../axios_inst';
+import { View,ScrollView,TouchableOpacity,AsyncStorage, Text } from 'react-native';
 import { ActivityIndicator, Colors,TouchableRipple } from 'react-native-paper';
 
-
+// custom imports
+import   { axiosInstance } from '../axios_inst';
+import { CaptilizeFirstWord } from '../utils';
 
 
 const UserList=({ navigation })=>{
@@ -34,9 +35,9 @@ const UserList=({ navigation })=>{
               <TouchableRipple>
       <Card>
       <Card.Title 
-      title={userlist.username} 
+      title={CaptilizeFirstWord(userlist.username)} 
       subtitle="last message" 
-      left={(props) => <Avatar.Image {...props} size={48} source={{ uri: userlist.avatar}} />}
+      left={(props) => <Avatar.Image {...props} size={52} source={{ uri: userlist.avatar}} />}
       right={(props)=><Badge {...props}  style={{ marginRight:20 }}>3</Badge>}
         />
       </Card>

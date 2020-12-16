@@ -1,6 +1,5 @@
 
 
-
 export const ValidateEmail=(mail)=>{
     if (/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(mail)){
       return true
@@ -36,27 +35,15 @@ export const checkifempty=(text)=>{
      }
 }
 
+export const CaptilizeFirstWord =(name)=>{
+  return name[0].toUpperCase() + name.substring(1);
+}
 
-export function base64ToBlob(base64, mime) 
-{
-    // mime = mime || '';
-    
-    var sliceSize = 1024;
-    var byteChars = window.atob(base64);
-    var byteArrays = [];
 
-    for (var offset = 0, len = byteChars.length; offset < len; offset += sliceSize) {
-        var slice = byteChars.slice(offset, offset + sliceSize);
-
-        var byteNumbers = new Array(slice.length);
-        for (var i = 0; i < slice.length; i++) {
-            byteNumbers[i] = slice.charCodeAt(i);
-        }
-
-        var byteArray = new Uint8Array(byteNumbers);
-
-        byteArrays.push(byteArray);
-    }
-
-    return new Blob(byteArrays, {type: mime});
+export function getDateString() {
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = `${date.getMonth() + 1}`.padStart(2, '0');
+  const day =`${date.getDate()}`.padStart(2, '0');
+  return `${year}${month}${day}`
 }

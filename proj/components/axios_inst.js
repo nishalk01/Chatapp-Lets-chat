@@ -1,26 +1,25 @@
 import axios from 'axios';
 import { AsyncStorage, Alert } from 'react-native';
-import {decode as atob, encode as btoa} from 'base-64'
+import {decode as atob} from 'base-64'
 import { navigate } from './RootNavigation'
 
 
 // export const baseURL = 'http://192.168.43.123:8000/api/';
+// export const socketurl="192.168.43.123:8000"
+
+
 export const socketurl="192.168.0.108:8000"
-var acess_="";
 
 export const baseURL = 'http://192.168.0.108:8000/api/';
 
-export const access_token= ()=>{
-AsyncStorage.getItem("access_token").then(access_token=>{
-	acess_=access_token
-})
- console.log(acess_)
- return  acess_ 
-}
+// export const access_token= ()=>{
+// AsyncStorage.getItem("access_token").then(access_token=>{
+// 	acess_=access_token
+// })
+//  console.log(acess_)
+//  return  acess_ 
+// }
 
-export const refresh_token = async ()=>{
-	return await AsyncStorage.getItem('refresh_token');
-}
 
 export const setRefreshToken=async (response)=>{
 	return await AsyncStorage.setItem('access_token', response.data.access);
@@ -30,13 +29,13 @@ export const setAcessToken=async (response)=>{
 }
 
 
-var acess_t= AsyncStorage.getItem("access_token")
+
 export const axiosInstance= axios.create({
 	baseURL: baseURL,
 	timeout: 5000,
 	headers: {
-		Authorization: AsyncStorage.getItem("access_token") ?
-			'JWT ' +  AsyncStorage.getItem("access_token") :
+		Authorization: AsyncStorage.getItem("access_token")?
+			'JWT ' + AsyncStorage.getItem("access_token") :
 			null,
 		'Content-Type': 'application/json',
 		accept: 'application/json',
@@ -56,7 +55,7 @@ axiosInstance.interceptors.response.use(
 	},
 	async function (error) {
 		const originalRequest = error.config;
-		console.log(error.response)
+		// console.log(error.response)
 		if (typeof error.response === 'undefined') {
 			Alert.alert(
 				'A server/network error occurred. ' +
@@ -83,7 +82,7 @@ axiosInstance.interceptors.response.use(
 				const  refreshToken= await AsyncStorage.getItem('refresh_token')
 				 
 			
-				console.log("getting refresh token")
+				// console.log("getting refresh token")
 				if (refreshToken) {
 					
 					const tokenParts = JSON.parse(atob(refreshToken.split('.')[1]));

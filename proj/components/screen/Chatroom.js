@@ -9,7 +9,7 @@ const ChatRoom=({ route,navigation})=>{
    return(
 <View style={{ flex: 1 }}>
    {/* <AppBar/> */}
-    <Example  user_room_id={ route.params.user_room_id }/>
+    <Example  other_user_room_id={ route.params.user_room_id }/>
 
 </View>
    )

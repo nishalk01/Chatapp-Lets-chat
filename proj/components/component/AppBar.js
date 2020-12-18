@@ -16,6 +16,7 @@ const AppBar = () => {
   },[])
   
   const _goBack = () => {console.log('Went back')
+  AsyncStorage.clear()
   if(inoke){
     inoke.close();//try and catch here
   }

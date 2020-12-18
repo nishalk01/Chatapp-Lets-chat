@@ -10,7 +10,6 @@ import { CaptilizeFirstWord } from '../utils';
 
 const UserList=({ navigation })=>{
   const [ userListsData,setUserListData ]=useState([]);
-  const [roomId,setRoomId]=useState("");
   useEffect(()=>{
    AsyncStorage.getItem("acess_token").then(()=>{
        axiosInstance.get("userlist/all_users/")

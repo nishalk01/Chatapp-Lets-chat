@@ -1,21 +1,22 @@
 import React,{useState,useRef,useEffect,useContext} from 'react';
 import {Avatar,Title,List,Divider,Caption,TouchableRipple,TextInput,Provider,FAB,Button, Paragraph,Portal,Modal,IconButton,Colors} from 'react-native-paper'
-import {View,StyleSheet,Text,ToastAndroid,Image,AsyncStorage,TouchableHighlight } from 'react-native'
+import {View,StyleSheet,Text,ToastAndroid,Image,AsyncStorage,TouchableHighlight, Alert } from 'react-native'
 import { Modalize } from 'react-native-modalize';
 import * as ImagePicker from 'expo-image-picker';
 //custom imports
-import { WebsocketContext } from '../contexts/websocketcontext';
 import {  axiosInstance } from '../axios_inst';
 import { getDateString,CaptilizeFirstWord } from '../utils';
+
  
-const ProfilePage=({ navigation })=>{
-  const { userDetail }=useContext(WebsocketContext)
-  const { avatar,email,status,username } =userDetail;
+const ProfilePage=({ navigation,route })=>{
+  const details=route.params.detail
+  const {avatar,email,status,username}=details 
   const [visibleName, setVisibleName] = useState(false);
   const [visibleAbout,setVisibleAbout]=useState(false);
   const [visibleEmail,setVisibleEmail]=useState(false);
+  const [showDp,setShowDp]=useState(avatar);
 
-  // const [visible,setVisible]=useState(false);
+
   const showModalName = () => setVisibleName(true);
   const hideModalName = () => setVisibleName(false);
   const containerStyle = {backgroundColor: 'white', padding: 20};
@@ -27,18 +28,9 @@ const ProfilePage=({ navigation })=>{
   const hideModalEmail = () => setVisibleEmail(false);
 
   const modalizeRef = useRef(null);
-  const [image, setImage] = useState(null);
-  
-  // useEffect(() => {
-  //   (async () => {
-  //     if (Platform.OS !== 'web') {
-  //       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-  //       if (status !== 'granted') {
-  //         alert('Sorry, we need camera roll permissions to make this work!');
-  //       }
-  //     }
-  //   })();
-  // }, []);
+  // const [image, setImage] = useState(null);
+  const [isloading,setIsLoading]=useState(false);
+
 
 
 
@@ -68,7 +60,8 @@ const ProfilePage=({ navigation })=>{
 
    
     if (!result.cancelled) {
-      setImage(result.uri);
+      setIsLoading(true)
+      // setImage(result.uri);
       let uri = result.uri;
       let fileExtension = uri.substr(uri.lastIndexOf('.') + 1);
       const type='image/'+String(fileExtension)
@@ -84,6 +77,8 @@ const ProfilePage=({ navigation })=>{
       axiosInstance.post('userlist/update_profile/',ProfilepicForm)
       .then(res=>{
         console.log(res.status)
+        setShowDp(result.uri)
+        setIsLoading(false)
         showToastWithGravityAndOffset()
       })
       .catch(err=>{
@@ -111,7 +106,6 @@ const ProfilePage=({ navigation })=>{
          onChangeText={text => console.log(text)}
         
         ></TextInput>
-
         </Modal>
 
         <Modal visible={visibleAbout} onDismiss={hideModalAbout} contentContainerStyle={containerStyle}>
@@ -138,18 +132,13 @@ const ProfilePage=({ navigation })=>{
 
       </Portal>
     
-      {/* <Searchbar
-      placeholder="Search"
      
-    /> */}
-     <TouchableRipple
-      onPress={()=>{console.log("touch man")}}
-      >
-      <Avatar.Image style={styles.avatar}  source={{ uri: avatar}}size={150} />
-      </TouchableRipple>  
+    
+      <Avatar.Image style={styles.avatar} source={{ uri: showDp}} size={150} />
+
      
       <FAB
-      loading={false}
+      loading={isloading}
     style={styles.fab}
     large
     icon="camera"
@@ -188,14 +177,14 @@ const ProfilePage=({ navigation })=>{
      
       <Divider/>
 {/* first input  Name */}
-{image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
+{/* {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />} */}
       <TouchableRipple
       onPress={showModalName}
       rippleColor="rgba(0, 0, 0, .32)"
       >
       <List.Item 
         title={<Paragraph>Name</Paragraph>}
-        description={<Text><Title>{CaptilizeFirstWord(username)}<Text>{'\n'}</Text></Title><Caption>This is your username</Caption></Text>}
+        description={<Text><Title>{ CaptilizeFirstWord(username)}<Text>{'\n'}</Text></Title><Caption>This is your username</Caption></Text>}
         left={props=><List.Icon  icon="account"  size={30} />}
         right={props=><List.Icon  icon="pencil" />}
       />
@@ -222,7 +211,7 @@ const ProfilePage=({ navigation })=>{
      >
      <List.Item 
       title={<Paragraph>Email</Paragraph>}
-    description={<Text>{ email  }</Text>}
+    description={<Text>{email}</Text>}
       left={props=><List.Icon  icon="email"  size={30} />}
       right={props=><List.Icon  icon="pencil" />}
   />

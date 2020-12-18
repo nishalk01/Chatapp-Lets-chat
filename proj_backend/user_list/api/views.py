@@ -3,10 +3,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework import status
 import jwt
-from PIL import Image
-import io
-import base64
-# from PIL import Image
+
 from accounts.models import Account
 from django.conf import settings
 from .serializers import UserListSerializers,UserDetailsSerializers
@@ -60,7 +57,16 @@ def update_profile(request):
             
         
     
-
+@api_view(['GET',])
+def get_user_room_id(request):
+    if request.method=="POST":
+        tokens_jwt=request.META["HTTP_AUTHORIZATION"]
+        satisfied,user_id=get_user_from_token(tokens_jwt)
+        if(satisfied):
+            account_obj=Account.objects.get(id=user_id)  
+            return Response({"room_id":account_obj.user_room_id})
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
    
 
 

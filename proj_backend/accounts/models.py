@@ -43,7 +43,7 @@ class Account(AbstractBaseUser):
 	is_verified				=models.BooleanField(default=False)
 	avatar					=models.ImageField(default="default.png",upload_to="user_pics")
 	status					=models.TextField(max_length=200,blank=True)
-	user_room_id			=models.CharField(max_length=100)
+	user_room_id			=models.CharField(max_length=100,unique=True)
 	
 	# user_room_id			=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     # other fields

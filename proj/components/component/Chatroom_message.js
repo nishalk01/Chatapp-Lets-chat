@@ -1,25 +1,30 @@
-import React, { useState, useCallback, useEffect } from 'react'
+import React, { useState, useCallback, useEffect,useContext } from 'react'
 import { GiftedChat } from 'react-native-gifted-chat'
 import { useIsFocused  } from '@react-navigation/native'
 
 //custom imports
-import { socketurl } from '../axios_inst'
+import { socketurl, axiosInstance } from '../axios_inst'
+import { AsyncStorage } from 'react-native';
+import {WebsocketContext} from '../contexts/websocketcontext';
 
-export default function Example({user_room_id}) {
-
+export default function Example({other_user_room_id}) {
+  const { userDetail }=useContext(WebsocketContext)
+  console.log(userDetail)
+  const {avatar,user_room_id,id,username}=userDetail
   const [ chatRoomConn,setChatRoomConn ] = useState();
   const [messages, setMessages] = useState([]);
   const activeScreen=useIsFocused() 
 
   useEffect(()=>{//setup websocket connection
+    
     const ChatroomSocket=new WebSocket(
       'ws://'
       + socketurl
       + '/ws/chat/'
-      + user_room_id
+      + other_user_room_id
       + '/'
  );
- console.log(ChatroomSocket)
+//  console.log(ChatroomSocket)
 
  ChatroomSocket.onopen=(e)=>{
   setChatRoomConn(ChatroomSocket);
@@ -48,17 +53,14 @@ ChatroomSocket.onclose=(e)=>{
 
   const onSend = useCallback((messages = []) => {
     //send to user in that chatroom
-    
-    // setMessages(previousMessages => GiftedChat.append(previousMessages, messages)) 
-    //make if delivered or not in this by verifying if the message is recieved in websocket onmessage through message id
-    chatRoomConn.send(JSON.stringify({
-      'message': messages[0]
-  }));
-
-
-  
-
-    
+   
+      // console.log(messages)
+      // setMessages(previousMessages => GiftedChat.append(previousMessages, messages)) 
+      //make if delivered or not in this by verifying if the message is recieved in websocket onmessage through message id
+      chatRoomConn.send(JSON.stringify({
+        'command':"message",
+        'message': messages[0]
+    }));
   }, [chatRoomConn])
 
 
@@ -72,11 +74,15 @@ ChatroomSocket.onclose=(e)=>{
     
       
     <GiftedChat
-      isTyping={true}
+      showAvatarForEveryMessage={true}
+      // isTyping={true}
       messages={messages}
       onSend={messages => onSend(messages)}
       user={{
-        _id: 2, //need user  id
+        _id: id, //need user  id
+        name: username,
+        avatar: avatar,
+        room_id:other_user_room_id
       }}
     />
     // </View>

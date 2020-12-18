@@ -1,4 +1,4 @@
-import React ,{useEffect} from 'react';
+import React ,{useEffect,useState} from 'react';
 import { StyleSheet, Text, View,AsyncStorage } from 'react-native';
 import { Provider as PaperProvider ,
          DarkTheme as PaperDarkTheme,
@@ -16,6 +16,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 //custom function imports
 import {navigationRef,navigate } from './components/RootNavigation';
 import WebsocketContextProvider from  './components/contexts/websocketcontext';
+import {axiosInstance} from './components/axios_inst';
 //screens
 import Login from './components/screen/login'
 import UserList from './components/screen/userlist'
@@ -49,46 +50,66 @@ const CombinedDarkTheme = {
 const Stack = createStackNavigator();
 const Tab = createMaterialTopTabNavigator();
 
-const MainApp=()=>{
-  
-  return (
-    
-    <View style={{flex:1}}>
-     
-    <AppBar/>
-    
-    <Tab.Navigator>
-      <Tab.Screen 
-              options={{
-                tabBarLabel: 'Chat',
-                tabBarIcon: ({ color }) => (
-                  <MaterialCommunityIcons name="chat" color={color} size={26} />
-                ),
-              }}
-      name="UserList"  
-      component={UserList} />
 
-      <Tab.Screen 
-      options={{
-        tabBarLabel: 'Profile',
-      
-      }}
-      name="ProfilePage" 
-      component={ProfilePage}/>
-    </Tab.Navigator>
-    </View>
-    
-  );
-} 
+
+
 
 
 export default function App() {
+  const [userDetail,setUserDetail]=useState()
+
   useEffect(()=>{
+
     if(AsyncStorage.getItem('access_token')){
-    navigate('MainApp', { screen: 'UserList' });
+    axiosInstance.get("userlist/get_user_details/")
+    .then(res=>{
+      setUserDetail(res.data)
+      console.log(res.data)
+      navigate('MainApp', { screen: 'UserList' });
+    })
+    .catch(err=>{
+      console.log(err)
+    })
+    
     console.log("pass")
     }
   },[])
+
+  const MainApp=()=>{
+  
+    return (
+      
+      <View style={{flex:1}}>
+       
+      <AppBar/>
+      
+      <Tab.Navigator>
+        <Tab.Screen 
+                options={{
+                  tabBarLabel: 'Chat',
+                  tabBarIcon: ({ color }) => (
+                    <MaterialCommunityIcons name="chat" color={color} size={26} />
+                  ),
+                }}
+        name="UserList"  
+        component={UserList} />
+  
+        <Tab.Screen 
+        options={{
+          tabBarLabel: 'Profile',
+        
+        }}
+        name="ProfilePage" 
+        component={ProfilePage}
+        initialParams={{detail:userDetail}}
+        />
+      </Tab.Navigator>
+      </View>
+      
+    );
+  } 
+  
+
   return (
     
     <WebsocketContextProvider>

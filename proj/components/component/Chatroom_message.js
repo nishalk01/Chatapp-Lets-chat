@@ -2,14 +2,15 @@ import React, { useState, useCallback, useEffect,useContext } from 'react'
 import { GiftedChat } from 'react-native-gifted-chat'
 import { useIsFocused  } from '@react-navigation/native'
 
+
 //custom imports
 import { socketurl, axiosInstance } from '../axios_inst'
-import { AsyncStorage } from 'react-native';
 import {WebsocketContext} from '../contexts/websocketcontext';
+import {StoreMessageContext} from '../contexts/storemessage';
 
 export default function Example({other_user_room_id}) {
-  const { userDetail }=useContext(WebsocketContext)
-  console.log(userDetail)
+  const { userDetail }=useContext(WebsocketContext);
+  const { newMessage } =useContext(StoreMessageContext);
   const {avatar,user_room_id,id,username}=userDetail
   const [ chatRoomConn,setChatRoomConn ] = useState();
   const [messages, setMessages] = useState([]);
@@ -33,8 +34,7 @@ export default function Example({other_user_room_id}) {
 ChatroomSocket.onmessage=(e)=>{
  
  const data=JSON.parse(e.data)//write to database
- console.log(data)
- setMessages(previousMessages => GiftedChat.append(previousMessages, data.message))
+ setMessages(previousMessages => [...previousMessages,data.message])
 
 }
 
@@ -48,9 +48,13 @@ ChatroomSocket.onclose=(e)=>{
    if(activeScreen===false){
      chatRoomConn.close()
    }
-  },[activeScreen])
+   setMessages(previousMessages => GiftedChat.append(previousMessages, newMessage))
+  // setMessages(previousMessages=>[...previousMessages,newMessage])
+   console.log(newMessage)
 
+  },[activeScreen,newMessage])
 
+  
   const onSend = useCallback((messages = []) => {
     //send to user in that chatroom
    
@@ -75,6 +79,7 @@ ChatroomSocket.onclose=(e)=>{
       
     <GiftedChat
       showAvatarForEveryMessage={true}
+      inverted={false}
       // isTyping={true}
       messages={messages}
       onSend={messages => onSend(messages)}

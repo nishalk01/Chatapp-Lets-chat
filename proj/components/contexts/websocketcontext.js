@@ -1,10 +1,12 @@
-import React,{ useEffect,createContext,useState } from 'react'
+import React,{ useEffect,createContext,useState,useContext } from 'react'
 import { AsyncStorage } from 'react-native';
 import { axiosInstance,socketurl } from '../axios_inst'
+import  {StoreMessageContext} from './storemessage'
 
 
 export const WebsocketContext=createContext();
 const WebsocketContextProvider=(props)=>{
+    const { add_new_message }=useContext(StoreMessageContext)
     const [message,setMessage]=useState([]);
     const [userDetail,setUserDetail ]=useState();
     var  [inoke,setInoke]=useState();
@@ -28,7 +30,8 @@ const WebsocketContextProvider=(props)=>{
            }
             chatSocket.onmessage=(e)=>{
              const data=JSON.parse(e.data)//write to database
-             setMessage(message=>[data.message,...message])
+            //  setMessage(message=>[data.message,...message])
+            add_new_message(data.message)
     
            }
     

@@ -16,6 +16,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 //custom function imports
 import {navigationRef,navigate } from './components/RootNavigation';
 import WebsocketContextProvider from  './components/contexts/websocketcontext';
+import  StoreMessageContextProvider from './components/contexts/storemessage'
 import {axiosInstance} from './components/axios_inst';
 //screens
 import Login from './components/screen/login'
@@ -56,7 +57,7 @@ const Tab = createMaterialTopTabNavigator();
 
 
 export default function App() {
-  const [userDetail,setUserDetail]=useState()
+  const [userDetail,setUserDetail]=useState() //change this to useFocusEffect
 
   useEffect(()=>{
 
@@ -111,8 +112,9 @@ export default function App() {
   
 
   return (
-    
+    <StoreMessageContextProvider>
     <WebsocketContextProvider>
+      
     <PaperProvider  theme={CombinedDefaultTheme}>
     <NavigationContainer ref={navigationRef} >
      
@@ -128,6 +130,7 @@ export default function App() {
     </NavigationContainer>
     </PaperProvider>
     </WebsocketContextProvider>
+    </StoreMessageContextProvider>
   );
 }
 

@@ -6,9 +6,13 @@ import { AsyncStorage } from 'react-native';
 
 import {navigate} from '../RootNavigation';
 import { WebsocketContext } from '../contexts/websocketcontext';
+import {StoreMessageContext} from '../contexts/storemessage';
+
+
 
 const AppBar = () => {
-  const { websocketConnection,message,inoke}=useContext(WebsocketContext);
+  const { websocketConnection,inoke}=useContext(WebsocketContext);
+  const { newMessage } =useContext(StoreMessageContext);
   useEffect(()=>{
    websocketConnection();
    console.log(inoke)
@@ -27,7 +31,7 @@ const AppBar = () => {
 };
   const MenuRef= useRef("null");
   const _handleSearch = () => {
-    console.log(message)
+    console.log(newMessage)
     
   // AsyncStorage.clear()
 };

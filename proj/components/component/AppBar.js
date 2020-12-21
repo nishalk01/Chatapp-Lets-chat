@@ -32,6 +32,7 @@ const AppBar = () => {
   const MenuRef= useRef("null");
   const _handleSearch = () => {
     console.log(newMessage)
+    navigate("Emoji")
     
   // AsyncStorage.clear()
 };

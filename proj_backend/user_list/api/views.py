@@ -3,9 +3,10 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework import status
 import jwt
+from django.conf import settings
 
 from accounts.models import Account
-from django.conf import settings
+from user_list.models import UserRelation
 from .serializers import UserListSerializers,UserDetailsSerializers
 
 
@@ -37,7 +38,6 @@ def get_current_user_details(request):
    if(satisfied):
     account_obj=Account.objects.get(id=user_id)
     serializer=UserDetailsSerializers(account_obj,context={"request":request})
-    # response_room_id={"roomid":account_obj.user_room_id,"email":account_obj.email,"username":account_obj.username,}
     return Response(serializer.data)
    else:
        return Response(status=status.HTTP_401_UNAUTHORIZED)
@@ -67,6 +67,20 @@ def get_user_room_id(request):
             return Response({"room_id":account_obj.user_room_id})
         else:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+@api_view(['GET'])
+def get_user_list_relation(request):
+    if request.method=="GET":
+        tokens_jwt=request.META["HTTP_AUTHORIZATION"]
+        satisfied,user_id=get_user_from_token(tokens_jwt)
+        if(satisfied): 
+            UserRelation_obj=UserRelation.objects.get(current_user=user_id)
+            print(UserRelation_obj.users)
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+            
    
 
 

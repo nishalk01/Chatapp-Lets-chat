@@ -26,6 +26,7 @@ const ProfilePage=({ navigation,route })=>{
 
   const showModalEmail = () => setVisibleEmail(true);
   const hideModalEmail = () => setVisibleEmail(false);
+  const [showFab,setShowFab]=useState(true);
 
   const modalizeRef = useRef(null);
   // const [image, setImage] = useState(null);
@@ -45,9 +46,12 @@ const ProfilePage=({ navigation,route })=>{
   };
 
   const onOpen=()=>{
+    setShowFab(false)
    modalizeRef.current?.open();
   };
-  
+  const showHiddenFab_=()=>{
+    setShowFab(true)
+  }
   const pickImage = async () => {
     modalizeRef.current?.close();
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -137,15 +141,16 @@ const ProfilePage=({ navigation,route })=>{
       <Avatar.Image style={styles.avatar} source={{ uri: showDp}} size={150} />
 
      
-      <FAB
+     {showFab?(<FAB
       loading={isloading}
     style={styles.fab}
     large
     icon="camera"
     onPress={onOpen}
-      />
+      />):null} 
      
       <Modalize 
+      onClose={showHiddenFab_}
       ref={modalizeRef}
       modalHeight={140}
       HeaderComponent={

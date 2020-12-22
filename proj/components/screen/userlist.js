@@ -12,16 +12,28 @@ import { CaptilizeFirstWord } from '../utils';
 
 const UserList=({ navigation })=>{
  const modalizeRef=useRef(null);
+ const [showFab,setShowFab]=useState(true);
+ const [ userListsData,setUserListData ]=useState([]);
 
  const onOpen = () => {
+   setShowFab(false)
   modalizeRef.current?.open();
 };
 
+const ShowHiddenFab=()=>{
+  setShowFab(true)
+}
 
-
-  useFocusEffect(
+  useFocusEffect( //remove this 
     useCallback(() => {
       AsyncStorage.getItem("acess_token").then(()=>{
+        axiosInstance.get("userlist/user_relation_list/").then(res=>{
+          console.log(res.status)
+
+        })
+        .catch(err=>{
+          console.log(err)
+        })
         axiosInstance.get("userlist/all_users/")
         .then(res=>{
           setUserListData(res.data);
@@ -32,11 +44,12 @@ const UserList=({ navigation })=>{
     })
 
       // return () => unsubscribe();
-    }, [userListsData])
+    }, [])
   );
 
 
-  const [ userListsData,setUserListData ]=useState([]);
+  
+  
   // useEffect(()=>{
   //  AsyncStorage.getItem("acess_token").then(()=>{
   //      axiosInstance.get("userlist/all_users/")
@@ -50,6 +63,7 @@ const UserList=({ navigation })=>{
  
   // },[])
 
+ 
  const user_list=userListsData.length?(
    userListsData.map(userlist=>{
      return(
@@ -82,7 +96,7 @@ const UserList=({ navigation })=>{
   <View style={{ flex:1 }}>
     
   
-  <Modalize ref={modalizeRef}
+  <Modalize ref={modalizeRef} onClose={ShowHiddenFab}
   HeaderComponent={
     <View style={{ padding:"5%" }}>
       <Title>All available Chats</Title>
@@ -94,13 +108,14 @@ const UserList=({ navigation })=>{
           {user_list}
        <Divider/>
     </ScrollView>
-
-    <FAB
+  {showFab?(<FAB
     style={styles.fab}
     large
     icon="chat"
     onPress={onOpen}
-  />
+  />)
+  :null}
+    
   </View>
     )
 }

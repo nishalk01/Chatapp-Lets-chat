@@ -1,6 +1,5 @@
 from rest_framework.decorators import api_view,permission_classes
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
 from rest_framework import status
 import jwt
 from django.conf import settings
@@ -21,13 +20,6 @@ def get_user_from_token(tokens_jwt):
  except:
     return False,""
 
-@permission_classes([AllowAny])
-@api_view(['GET',])#ignore user_relation for now
-def get_user_list(request):
-    print(request)
-    users=Account.objects.all()
-    serializer=UserListSerializers(users,context={"request":request},many=True)
-    return Response(serializer.data)
 
 @api_view(['GET',])
 def get_current_user_details(request):
@@ -74,9 +66,13 @@ def get_user_list_relation(request):
         tokens_jwt=request.META["HTTP_AUTHORIZATION"]
         satisfied,user_id=get_user_from_token(tokens_jwt)
         if(satisfied): 
+            userDetail=[]
             UserRelation_obj=UserRelation.objects.get(current_user=user_id)
-            print(UserRelation_obj.users)
-            return Response(status=status.HTTP_200_OK)
+            friends=UserRelation_obj.users.all()#list of users added
+            for friend in friends:
+             serializers=UserListSerializers(friend,context={"request":request})
+             userDetail.append(serializers.data)
+            return Response(data=userDetail,status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 

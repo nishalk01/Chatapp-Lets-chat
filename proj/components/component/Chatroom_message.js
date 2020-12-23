@@ -1,12 +1,17 @@
 import React, { useState, useCallback, useEffect,useContext } from 'react'
-import { GiftedChat } from 'react-native-gifted-chat'
-import { useIsFocused  } from '@react-navigation/native'
+import { GiftedChat,Bubble,Send } from 'react-native-gifted-chat'
+import { useIsFocused,useFocusEffect  } from '@react-navigation/native'
+import {View,StyleSheet} from 'react-native'
+import { IconButton } from 'react-native-paper';
+import * as DocumentPicker from 'expo-document-picker';
 
 
 //custom imports
 import { socketurl, axiosInstance } from '../axios_inst'
 import {WebsocketContext} from '../contexts/websocketcontext';
 import {StoreMessageContext} from '../contexts/storemessage';
+import {navigate} from '../RootNavigation';
+
 
 export default function Example({other_user_room_id}) {
   const { userDetail }=useContext(WebsocketContext);
@@ -16,7 +21,10 @@ export default function Example({other_user_room_id}) {
   const [messages, setMessages] = useState([]);
   const activeScreen=useIsFocused() 
 
-  useEffect(()=>{//setup websocket connection
+
+
+useFocusEffect(
+    useCallback(()=>{//setup websocket connection
     
     const ChatroomSocket=new WebSocket(
       'ws://'
@@ -39,14 +47,19 @@ ChatroomSocket.onmessage=(e)=>{
 }
 
 ChatroomSocket.onclose=(e)=>{
- console.error("chat socket closed inside room")
+ console.log("chat socket closed inside room")
 }
-  },[])
+  },[]))
   
-
-  useEffect(()=>{
+//second useeffect
+useEffect(()=>{
    if(activeScreen===false){
-     chatRoomConn.close()
+     try {
+      chatRoomConn.close()
+     } catch (error) {
+       console.log(error)
+     }
+    
    }
    setMessages(previousMessages => GiftedChat.append(previousMessages, newMessage))
   // setMessages(previousMessages=>[...previousMessages,newMessage])
@@ -55,9 +68,9 @@ ChatroomSocket.onclose=(e)=>{
   },[activeScreen,newMessage])
 
   
-  const onSend = useCallback((messages = []) => {
+const onSend = useCallback((messages = []) => {
     //send to user in that chatroom
-   
+       console.log("sending")
       // console.log(messages)
       // setMessages(previousMessages => GiftedChat.append(previousMessages, messages)) 
       //make if delivered or not in this by verifying if the message is recieved in websocket onmessage through message id
@@ -68,21 +81,63 @@ ChatroomSocket.onclose=(e)=>{
   }, [chatRoomConn])
 
 
-  // const send_mssg=(messages)=>{
-  //   console.log(messages)
-  //   chatRoomConn.send(JSON.stringify({
-  //     'message': messages[0]
-  // }));
-  // }
+
+//document button
+const _pickDocument = async () => {
+    let result = await DocumentPicker.getDocumentAsync({});
+    alert(result.uri);
+    console.log(result);
+}
+  
+
+//gifted chat customize
+const renderBubble=props=> {
+    return (
+      <Bubble
+        {...props}
+        wrapperStyle={{
+          right: {
+            backgroundColor: '#6646ee'
+          }
+        }}
+        textStyle={{
+          right: {
+            color: '#fff'
+          }
+        }}
+      />
+    );
+  }
+ 
+  
+  const  renderSend=props=> {
+    if (!props.text.trim()) { // text box empty
+      return (
+      <View style={{flexDirection:"row"}}>
+       <IconButton icon='attachment' size={32} onPress={_pickDocument} color='#0052cc' />
+       <IconButton icon='camera' size={32}  onPress={()=>{navigate("Camera")}} color='#0052cc' />
+      </View>
+      )
+    }
+    return (
+      <Send {...props}>
+        <View  >
+        <IconButton icon='send-circle' size={52} color='#0052cc' />
+        </View>
+      </Send>
+    );
+  }
+
   return (
-    
-      
     <GiftedChat
       showAvatarForEveryMessage={true}
       inverted={false}
       // isTyping={true}
       messages={messages}
       onSend={messages => onSend(messages)}
+      renderBubble={renderBubble}
+      alwaysShowSend
+      renderSend={renderSend}
       user={{
         _id: id, //need user  id
         name: username,
@@ -90,6 +145,13 @@ ChatroomSocket.onclose=(e)=>{
         room_id:other_user_room_id
       }}
     />
-    // </View>
   )
 }
+
+const styles = StyleSheet.create({
+  sendingContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    
+  }
+});

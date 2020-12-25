@@ -226,7 +226,7 @@ const ProfilePage=({ navigation,route })=>{
 {/* QR option */}
 
   <TouchableRipple
-      onPress={() => {navigation.navigate("ShowQR")}}
+      onPress={() => {navigation.navigate("ShowQR",{"details":details})}}
       rippleColor="rgba(0, 0, 0, .32)"
      >
      <List.Item 

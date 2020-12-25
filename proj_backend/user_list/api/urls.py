@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import get_user_list,get_current_user_details,update_profile,get_user_list_relation
+from .views import get_current_user_details,update_profile,get_user_list_relation
 
 app_name="userlist"
 

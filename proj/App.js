@@ -27,6 +27,7 @@ import AppBar from './components/component/AppBar'
 import ProfilePage from './components/component/ProfilePage';
 import QrPage from './components/screen/QRPage';
 import CameraPage from './components/component/camera';
+import OpenPage from './components/component/Openpage';
 
 const CombinedDefaultTheme = {
   ...PaperDefaultTheme,
@@ -120,13 +121,14 @@ export default function App() {
     <NavigationContainer ref={navigationRef} >
      
       <Stack.Navigator headerMode={"float"} > 
-      
+      <Stack.Screen name="openPage"  options={{ headerShown:false}} component={OpenPage}/>
       <Stack.Screen  name="Login" component={Login} />
       <Stack.Screen name="RegisterPage" component={RegisterPage} />
       <Stack.Screen name="ChatRoom"   options={{headerShown: false}}  component={ChatRoom}/>
       <Stack.Screen name="MainApp" options={{headerShown: false}}  component={MainApp}/>
       <Stack.Screen name="ShowQR"  options={{ headerShown:false}} component={QrPage} />
       <Stack.Screen name="Camera"  options={{ headerShown:false}} component={CameraPage}/>
+      
     </Stack.Navigator>
     </NavigationContainer>
     </PaperProvider>

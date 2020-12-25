@@ -32,7 +32,7 @@ const AppBar = () => {
   const MenuRef= useRef("null");
   const _handleSearch = () => {
     console.log(newMessage)
-    navigate("Camera")
+    navigate("openPage")
     
   // AsyncStorage.clear()
 };

@@ -1,6 +1,6 @@
 import React,{useState,useRef,useEffect,useContext} from 'react';
 import {Avatar,Title,List,Divider,Caption,TouchableRipple,TextInput,Provider,FAB,Button, Paragraph,Portal,Modal,IconButton,Colors} from 'react-native-paper'
-import {View,StyleSheet,Text,ToastAndroid,Image,AsyncStorage,TouchableHighlight, Alert } from 'react-native'
+import {View,StyleSheet,Text,ToastAndroid,Image,AsyncStorage,TouchableHighlight, Alert, ScrollView } from 'react-native'
 import { Modalize } from 'react-native-modalize';
 import * as ImagePicker from 'expo-image-picker';
 //custom imports
@@ -15,13 +15,18 @@ const ProfilePage=({ navigation,route })=>{
   const [visibleAbout,setVisibleAbout]=useState(false);
   const [visibleEmail,setVisibleEmail]=useState(false);
   const [showDp,setShowDp]=useState(avatar);
+  const [statusState,setStatusState]=useState(status);
+  const [postStatus,setPostStatus]=useState("");
 
 
   const showModalName = () => setVisibleName(true);
   const hideModalName = () => setVisibleName(false);
   const containerStyle = {backgroundColor: 'white', padding: 20};
 
-  const showModalAbout = () => setVisibleAbout(true);
+  const showModalAbout = () => {
+    setVisibleAbout(true); 
+   
+  }
   const hideModalAbout = () => setVisibleAbout(false);
 
   const showModalEmail = () => setVisibleEmail(true);
@@ -29,7 +34,8 @@ const ProfilePage=({ navigation,route })=>{
   const [showFab,setShowFab]=useState(true);
 
   const modalizeRef = useRef(null);
-  // const [image, setImage] = useState(null);
+  
+ 
   const [isloading,setIsLoading]=useState(false);
 
 
@@ -94,8 +100,30 @@ const ProfilePage=({ navigation,route })=>{
 
     }
   };
+  const removeDp=()=>{
+    modalizeRef.current?.close();
+    axiosInstance.get("userlist/remove_profile_pic/")
+    .then(res=>{
+      console.log(res.status)
+    })
+    .catch(err=>{
+      console.log(err)
+    })
+  }
 
-  const [text,setText]=useState("")
+ const PostStatus=()=>{
+    axiosInstance.post("userlist/change_status/",{
+        "status":postStatus
+    })
+    .then(res=>{
+      setVisibleAbout(false)
+      setStatusState(res.data.status);
+    })
+    .catch(err=>{
+      console.log(err);
+    })
+ }
+ 
 
   
 
@@ -116,11 +144,10 @@ const ProfilePage=({ navigation,route })=>{
           <TextInput
          label="About"
          mode="flat"
-         onChangeText={text => console.log(text)}
+         onChangeText={text => setPostStatus(text)}
         
         ></TextInput>
-        <Button onPress={()=>{console.log("done clicked")}}>Done</Button>
-        <Button onPress={()=>{console.log("done clicked")}}>Done</Button>
+        <Button onPress={PostStatus}>CHANGE</Button>
 
         </Modal>
         <Modal visible={visibleEmail} onDismiss={hideModalEmail} contentContainerStyle={containerStyle}>
@@ -137,7 +164,7 @@ const ProfilePage=({ navigation,route })=>{
       </Portal>
     
      
-    
+     
       <Avatar.Image style={styles.avatar} source={{ uri: showDp}} size={150} />
 
      
@@ -173,14 +200,15 @@ const ProfilePage=({ navigation,route })=>{
     icon="trash-can"
     color={Colors.grey100}
     size={36}
-    onPress={() => console.log('Pressed')}
+    onPress={removeDp}
   />
 
 
        </View>
       </Modalize>
-     
+      <ScrollView>
       <Divider/>
+      
 {/* first input  Name */}
 {/* {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />} */}
       <TouchableRipple
@@ -203,7 +231,7 @@ const ProfilePage=({ navigation,route })=>{
      >
      <List.Item 
       title={<Paragraph>About</Paragraph>}
-    description={<Title>{status}</Title>}
+    description={<Title>{statusState}</Title>}
       left={props=><List.Icon  icon="information"  size={30} />}
       right={props=><List.Icon  icon="pencil" />}
   />
@@ -235,7 +263,7 @@ const ProfilePage=({ navigation,route })=>{
   />
   </TouchableRipple>
   <Divider/>
-
+  </ScrollView>
   </View>
   </Provider>
     )

@@ -4,13 +4,13 @@ import {decode as atob} from 'base-64'
 import { navigate } from './RootNavigation'
 
 
-// export const baseURL = 'http://192.168.43.123:8000/api/';
-// export const socketurl="192.168.43.123:8000"
+export const baseURL = 'http://192.168.43.123:8000/api/';
+export const socketurl="192.168.43.123:8000"
 
 
-export const socketurl="192.168.0.108:8000"
+// export const socketurl="192.168.0.108:8000"
 
-export const baseURL = 'http://192.168.0.108:8000/api/';
+// export const baseURL = 'http://192.168.0.108:8000/api/';
 
 // export const access_token= ()=>{
 // AsyncStorage.getItem("access_token").then(access_token=>{

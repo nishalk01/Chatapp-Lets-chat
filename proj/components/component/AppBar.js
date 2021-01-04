@@ -32,20 +32,22 @@ const AppBar = () => {
   const MenuRef= useRef("null");
   const _handleSearch = () => {
     console.log(newMessage)
-    navigate("openPage")
     
   // AsyncStorage.clear()
 };
 
   const hideMenu=()=>{
-    
     MenuRef.current.hide();
     navigate('MainApp', { screen: 'UserList' });
   }
   const showMenu=()=>{
     MenuRef.current.show();
   }
-  
+  const gotoQRscan=()=>{
+    MenuRef.current.hide();
+    navigate('ScanQR');
+
+  }
   return (
     <Appbar.Header dark={false}>
       <Appbar.BackAction onPress={_goBack} />
@@ -58,7 +60,7 @@ const AppBar = () => {
           <MenuItem onPress={hideMenu}>New Group</MenuItem>
           <MenuItem onPress={hideMenu}>New Broadcast</MenuItem>
           <MenuItem onPress={hideMenu}>Settings</MenuItem>
-          <MenuItem onPress={hideMenu}>Scan QRCode</MenuItem>
+          <MenuItem onPress={gotoQRscan}>Scan QRCode</MenuItem>
         </Menu>
     </Appbar.Header>
   );

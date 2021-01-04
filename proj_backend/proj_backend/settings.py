@@ -86,8 +86,8 @@ WSGI_APPLICATION = 'proj_backend.wsgi.application'
 ASGI_APPLICATION = 'proj_backend.asgi.application'
 
 
-redis_ip="192.168.0.108"
-# redis_ip="192.168.43.123"
+# redis_ip="192.168.0.108"
+redis_ip="192.168.43.123"
  
 
 CHANNEL_LAYERS = {

@@ -28,6 +28,7 @@ import ProfilePage from './components/component/ProfilePage';
 import QrPage from './components/screen/QRPage';
 import CameraPage from './components/component/camera';
 import OpenPage from './components/component/Openpage';
+import QRScan from './components/screen/qrScanner';
 
 const CombinedDefaultTheme = {
   ...PaperDefaultTheme,
@@ -128,6 +129,8 @@ export default function App() {
       <Stack.Screen name="MainApp" options={{headerShown: false}}  component={MainApp}/>
       <Stack.Screen name="ShowQR"  options={{ headerShown:false}} component={QrPage} />
       <Stack.Screen name="Camera"  options={{ headerShown:false}} component={CameraPage}/>
+      <Stack.Screen name="ScanQR"  options={{ headerShown:false}} component={QRScan}/>
+
       
     </Stack.Navigator>
     </NavigationContainer>
